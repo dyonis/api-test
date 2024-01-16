@@ -6,27 +6,29 @@ use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Attribute\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: 'users')]
 class User
 {
-    #[ORM\Id]
-    #[ORM\GeneratedValue]
-    #[ORM\Column]
+    #[Groups(['user','users'])]
+    #[ORM\Id, ORM\GeneratedValue, ORM\Column]
     private ?int $id = null;
 
+    #[Groups(['user','users'])]
     #[Assert\NotBlank]
     #[ORM\Column(length: 255)]
     private ?string $name = null;
 
+    #[Groups(['user','users'])]
     #[Assert\NotBlank]
     #[Assert\Email]
     #[ORM\Column(length: 255)]
     private ?string $email = null;
 
-    #[ORM\ManyToMany(targetEntity: Group::class, mappedBy: 'users')]
+    #[ORM\ManyToMany(targetEntity: Group::class, mappedBy: 'users', cascade:['all'])]
     private Collection $groups;
 
     public function __construct()
@@ -75,6 +77,7 @@ class User
     {
         if (!$this->groups->contains($group)) {
             $this->groups->add($group);
+            $group->addUser($this);
         }
 
         return $this;
@@ -83,6 +86,7 @@ class User
     public function removeGroup(Group $group): static
     {
         $this->groups->removeElement($group);
+        $group->removeUser($this);
 
         return $this;
     }

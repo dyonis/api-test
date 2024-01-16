@@ -1,6 +1,5 @@
 FROM php:8.2-fpm
 
-ENV PHP_IDE_CONFIG="serverName=dockerHost"
 WORKDIR /var/www
 
 RUN apt update && apt install -y \
@@ -25,5 +24,6 @@ RUN curl -sS https://get.symfony.com/cli/installer | bash -
 RUN mv /root/.symfony5/bin/symfony /usr/local/bin/symfony
 
 RUN pecl install xdebug && docker-php-ext-enable xdebug
+ENV PHP_IDE_CONFIG="serverName=dockerHost"
 
-CMD ["symfony", "server:start"]
+CMD ["php-fpm"]

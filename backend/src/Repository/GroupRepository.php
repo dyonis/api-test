@@ -19,7 +19,7 @@ class GroupRepository extends ServiceEntityRepository
             ->andWhere('g.id = :id')
             ->setParameter('id', $id)
             ->getQuery()
-            ->getResult();
+            ->getOneOrNullResult();
     }
 
     /**

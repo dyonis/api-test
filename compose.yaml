@@ -1,6 +1,18 @@
 version: '3.3'
 
 services:
+  api_db:
+    container_name: api_db
+    image: mysql:5.7
+    restart: always
+    ports:
+      - 3306:3306
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=api
+    networks:
+      - api-net
+
   api_backend:
     container_name: api_backend
     build:
@@ -10,8 +22,10 @@ services:
       - ./backend:/var/www
       - ./docker/php/php.ini:/usr/local/etc/php/php.ini
       - ./docker/php/xdebug.ini:/usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
-    ports:
-      - "9000:9000"
+    #ports:
+    #  - "8000:8000" #debug
+    depends_on:
+      - api_db
     networks:
       - api-net
 
@@ -24,18 +38,8 @@ services:
       - ./frontend:/var/www
       - ./docker/php/php.ini:/usr/local/etc/php/php.ini
       - ./docker/php/xdebug.ini:/usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
-    networks:
-      - api-net
-
-  api_db:
-    container_name: api_db
-    image: mysql:5.7
-    restart: always
-    ports:
-      - 3306:3306
-    environment:
-      - MYSQL_ROOT_PASSWORD=root
-      - MYSQL_DATABASE=api
+    depends_on:
+      - api_backend
     networks:
       - api-net
 
